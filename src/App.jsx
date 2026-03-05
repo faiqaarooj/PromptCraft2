@@ -5,18 +5,30 @@ import {
 } from "./data";
 
 // ─────────────────────────────────────────────────────────────
-//  DESIGN TOKENS
+//  DESIGN TOKENS (minimal Google-style)
 // ─────────────────────────────────────────────────────────────
 const C = {
-  bg:"#080C14", surface:"#0D1220", card:"#111827", border:"#1E293B",
-  borderHi:"#334155", text:"#F1F5F9", muted:"#94A3B8", dim:"#475569",
-  gold:"#F59E0B", blue:"#3B82F6", green:"#10B981", pink:"#EC4899",
-  purple:"#8B5CF6", cyan:"#06B6D4", orange:"#F97316", red:"#EF4444",
-  teal:"#14B8A6",
+  bg: "#F9FAFB",
+  surface: "#FFFFFF",
+  card: "#FFFFFF",
+  border: "#E5E7EB",
+  borderHi: "#D1D5DB",
+  text: "#111827",
+  muted: "#6B7280",
+  dim: "#9CA3AF",
+  gold: "#FDB022",
+  blue: "#1D4ED8",
+  green: "#16A34A",
+  pink: "#DB2777",
+  purple: "#6D28D9",
+  cyan: "#0891B2",
+  orange: "#EA580C",
+  red: "#DC2626",
+  teal: "#0D9488",
 };
 
-const font = "'Plus Jakarta Sans', system-ui, sans-serif";
-const mono = "'JetBrains Mono', 'Fira Code', monospace";
+const font = "'Google Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
+const mono = "'JetBrains Mono', 'Fira Code', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace";
 
 // ─────────────────────────────────────────────────────────────
 //  TINY UTILS
@@ -67,15 +79,27 @@ function Pill({ on, onClick, children, color = C.blue }) {
 
 function GBtn({ onClick, children, color = C.blue, disabled, full, sm }) {
   return (
-    <button onClick={onClick} disabled={disabled} style={{
-      background: disabled ? C.dim : `linear-gradient(135deg,${color},${color}bb)`,
-      border: "none", color: "#fff", borderRadius: 10, fontFamily: font,
-      padding: sm ? "7px 16px" : "11px 22px", cursor: disabled ? "not-allowed" : "pointer",
-      fontSize: sm ? 12 : 14, fontWeight: 800,
-      boxShadow: disabled ? "none" : `0 4px 20px ${color}44`,
-      transition: "all .2s", width: full ? "100%" : "auto",
-      letterSpacing: ".3px",
-    }}>{children}</button>
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      style={{
+        background: disabled ? "#E5E7EB" : color,
+        border: "none",
+        color: disabled ? C.muted : "#FFFFFF",
+        borderRadius: 999,
+        fontFamily: font,
+        padding: sm ? "7px 18px" : "10px 22px",
+        cursor: disabled ? "not-allowed" : "pointer",
+        fontSize: sm ? 13 : 14,
+        fontWeight: 600,
+        boxShadow: disabled ? "none" : "0 1px 2px rgba(15, 23, 42, 0.12)",
+        transition: "background-color .15s ease, box-shadow .15s ease, transform .05s ease",
+        width: full ? "100%" : "auto",
+        letterSpacing: 0,
+      }}
+    >
+      {children}
+    </button>
   );
 }
 
@@ -832,39 +856,55 @@ export default function App() {
     <div style={{ background:C.bg, minHeight:"100vh", fontFamily:font, color:C.text }}>
 
       {/* ── HEADER ── */}
-      <header style={{ borderBottom:`1px solid ${C.border}`, padding:"16px 32px", background:C.surface, position:"sticky", top:0, zIndex:100, backdropFilter:"blur(12px)" }}>
+      <header style={{ borderBottom:`1px solid ${C.border}`, padding:"12px 32px", background:"rgba(255,255,255,0.9)", position:"sticky", top:0, zIndex:100, backdropFilter:"blur(16px)" }}>
         <div style={{ maxWidth:1200, margin:"0 auto", display:"flex", alignItems:"center", justifyContent:"space-between" }}>
           <div style={{ display:"flex", alignItems:"center", gap:12 }}>
-            <div style={{ background:`linear-gradient(135deg,${C.gold},${C.pink})`, borderRadius:12, width:40, height:40, display:"flex", alignItems:"center", justifyContent:"center", fontSize:20, boxShadow:`0 0 24px ${C.gold}44` }}>⚡</div>
+            <div style={{ background:C.blue, borderRadius:999, width:36, height:36, display:"flex", alignItems:"center", justifyContent:"center", fontSize:18, color:"#FFFFFF", boxShadow:"0 1px 3px rgba(15,23,42,0.25)" }}>⚡</div>
             <div>
-              <div style={{ fontWeight:900, fontSize:20, color:C.text, letterSpacing:"-.3px" }}>PromptCraft</div>
-              <div style={{ color:C.muted, fontSize:11 }}>Universal AI Prompt Engineering Toolkit</div>
+              <div style={{ fontWeight:600, fontSize:18, color:C.text, letterSpacing:"-.01em" }}>PromptCraft</div>
+              <div style={{ color:C.muted, fontSize:12 }}>Universal AI prompt toolkit</div>
             </div>
           </div>
 
           <nav style={{ display:"flex", gap:4 }}>
             {TABS.map(t => (
-              <button key={t.id} onClick={()=>setTab(t.id)} style={{
-                background: tab===t.id ? `linear-gradient(135deg,${C.blue}22,${C.purple}22)` : "transparent",
-                border: `1.5px solid ${tab===t.id ? C.blue : "transparent"}`,
-                color: tab===t.id ? C.blue : C.muted,
-                borderRadius:9, padding:"8px 16px", cursor:"pointer",
-                fontFamily:font, fontSize:13, fontWeight:tab===t.id?800:500,
-                transition:"all .15s", display:"flex", alignItems:"center", gap:6,
-              }}>
+              <button
+                key={t.id}
+                onClick={() => setTab(t.id)}
+                style={{
+                  background: tab===t.id ? "#E0EBFF" : "transparent",
+                  border: "1px solid transparent",
+                  color: tab===t.id ? C.blue : C.muted,
+                  borderRadius:999,
+                  padding:"6px 14px",
+                  cursor:"pointer",
+                  fontFamily:font,
+                  fontSize:13,
+                  fontWeight:tab===t.id ? 600 : 500,
+                  transition:"background-color .15s ease, color .15s ease",
+                  display:"flex",
+                  alignItems:"center",
+                  gap:6,
+                }}
+              >
                 <span>{t.icon}</span>
-                <span style={{ display:"none", "@media(min-width:768px)":{display:"inline"} }}>{t.label}</span>
+                <span>{t.label}</span>
               </button>
             ))}
           </nav>
 
           <div style={{ display:"flex", alignItems:"center", gap:10 }}>
             {history.length > 0 && (
-              <div style={{ background:C.green+"22", border:`1px solid ${C.green}44`, color:C.green, borderRadius:8, padding:"5px 12px", fontSize:12, fontWeight:700 }}>
+              <div style={{ background:"#ECFDF3", border:`1px solid ${C.green}33`, color:C.green, borderRadius:999, padding:"4px 12px", fontSize:12, fontWeight:500 }}>
                 {history.length} saved
               </div>
             )}
-            <a href="https://github.com/your-username/promptcraft-ui" target="_blank" rel="noreferrer" style={{ background:C.card, border:`1px solid ${C.border}`, color:C.muted, borderRadius:9, padding:"7px 14px", textDecoration:"none", fontSize:12, fontWeight:700, display:"flex", alignItems:"center", gap:6 }}>
+            <a
+              href="https://github.com/your-username/promptcraft-ui"
+              target="_blank"
+              rel="noreferrer"
+              style={{ background:"#F3F4F6", border:`1px solid ${C.border}`, color:C.muted, borderRadius:999, padding:"6px 12px", textDecoration:"none", fontSize:12, fontWeight:500, display:"flex", alignItems:"center", gap:6 }}
+            >
               ⭐ Star on GitHub
             </a>
           </div>
@@ -873,17 +913,17 @@ export default function App() {
 
       {/* ── HERO BANNER (only on quick tab) ── */}
       {tab === "quick" && (
-        <div style={{ background:`linear-gradient(135deg,${C.blue}12,${C.purple}08,${C.pink}08)`, borderBottom:`1px solid ${C.border}`, padding:"28px 32px 24px" }}>
+        <div style={{ background:"#EEF2FF", borderBottom:`1px solid ${C.border}`, padding:"24px 32px 20px" }}>
           <div style={{ maxWidth:1200, margin:"0 auto", display:"grid", gridTemplateColumns:"1fr 1fr 1fr 1fr", gap:16 }}>
             {[
-              { icon:"🎯", stat:"5 Frameworks", sub:"R-C-A-T, CO-STAR, RISEN, S-T-A-R, C-A-R-E", color:C.blue },
-              { icon:"📚", stat:"8+ Ready Prompts", sub:"Design, Code, Marketing, Business & more", color:C.purple },
-              { icon:"🤖", stat:"10 AI Tools", sub:"Claude, ChatGPT, Gemini, Midjourney & more", color:C.green },
-              { icon:"🎓", stat:"8 Laws", sub:"Master prompt engineering without boring theory", color:C.gold },
+              { icon:"🎯", stat:"5 frameworks", sub:"Battle-tested patterns for any task", color:C.blue },
+              { icon:"📚", stat:"8+ libraries", sub:"Design, code, marketing, business & more", color:C.purple },
+              { icon:"🤖", stat:"10 AI tools", sub:"Works with ChatGPT, Claude, Gemini and more", color:C.green },
+              { icon:"🎓", stat:"8 quick laws", sub:"Learn prompt craft in minutes, not hours", color:C.gold },
             ].map((s,i) => (
-              <div key={i} style={{ background:C.card, border:`1px solid ${s.color}33`, borderRadius:12, padding:"14px 16px" }}>
+              <div key={i} style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:12, padding:"14px 16px" }}>
                 <div style={{ fontSize:24, marginBottom:6 }}>{s.icon}</div>
-                <div style={{ color:s.color, fontWeight:900, fontSize:15 }}>{s.stat}</div>
+                <div style={{ color:s.color, fontWeight:600, fontSize:15 }}>{s.stat}</div>
                 <div style={{ color:C.dim, fontSize:11, marginTop:3 }}>{s.sub}</div>
               </div>
             ))}
