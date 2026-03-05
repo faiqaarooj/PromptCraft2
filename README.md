@@ -175,5 +175,3 @@ If PromptCraft saved you time, please:
 - 🔗 **Link to it** from your blog or newsletter
 
 ---
-
-*Built with ❤️ to help everyone get better results from AI — regardless of technical background.*
