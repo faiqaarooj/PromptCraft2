@@ -4,6 +4,7 @@ import {
   PROMPT_LIBRARY, PROMPT_TIPS, HISTORY_KEY, FAVORITES_KEY
 } from "./data";
 
+
 // ─────────────────────────────────────────────────────────────
 //  DESIGN TOKENS (minimal Google-style)
 // ─────────────────────────────────────────────────────────────
