@@ -2,8 +2,8 @@
 
 > **Stop getting bad AI outputs. Build perfect prompts for any AI tool in seconds — no experience needed.**
 
-[![Live Demo](https://img.shields.io/badge/Live_Demo-Visit_App-blue?style=for-the-badge)](https://your-username.github.io/promptcraft-ui)
-[![GitHub Stars](https://img.shields.io/github/stars/your-username/promptcraft-ui?style=for-the-badge)](https://github.com/your-username/promptcraft-ui)
+[![Live Demo](https://prompt-craft-gilt.vercel.app/)
+[![GitHub Stars](https://img.shields.io/github/stars/faiqaarooj/promptcraft?style=for-the-badge)](https://github.com/faiqaarooj/promptcraft)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](LICENSE)
 
 ---
