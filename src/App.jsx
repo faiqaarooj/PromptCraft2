@@ -901,7 +901,7 @@ export default function App() {
               </div>
             )}
             <a
-              href="https://github.com/your-username/promptcraft-ui"
+              href="https://github.com/faiqaarooj/PromptCraft2"
               target="_blank"
               rel="noreferrer"
               style={{ background:"#F3F4F6", border:`1px solid ${C.border}`, color:C.muted, borderRadius:999, padding:"6px 12px", textDecoration:"none", fontSize:12, fontWeight:500, display:"flex", alignItems:"center", gap:6 }}
