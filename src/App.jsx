@@ -1,8 +1,12 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import {
   AI_TOOLS, CATEGORIES, TONES, FRAMEWORKS,
   PROMPT_LIBRARY, PROMPT_TIPS, HISTORY_KEY, FAVORITES_KEY
 } from "./data";
+import {
+  apiGetHistory, apiSaveHistory, apiClearHistory, apiRemoveHistory,
+  apiGetFavorites, apiAddFavorite, apiRemoveFavorite,
+} from "./api";
 
 
 // ─────────────────────────────────────────────────────────────
@@ -513,7 +517,22 @@ function LibraryTab() {
   const [search, setSearch] = useState("");
   const [showFavsOnly, setShowFavsOnly] = useState(false);
 
-  const toggleFav = (id) => setFavs(favs.includes(id) ? favs.filter(f=>f!==id) : [...favs, id]);
+  // Hydrate favourites from backend on mount
+  useEffect(() => {
+    apiGetFavorites().then((data) => {
+      if (Array.isArray(data)) setFavs(data);
+    });
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const toggleFav = (id) => {
+    if (favs.includes(id)) {
+      setFavs(favs.filter(f => f !== id));
+      apiRemoveFavorite(id);
+    } else {
+      setFavs([...favs, id]);
+      apiAddFavorite(id);
+    }
+  };
 
   const filtered = useMemo(() => PROMPT_LIBRARY.filter(p => {
     if (cat !== "all" && p.category !== cat) return false;
@@ -839,19 +858,37 @@ export default function App() {
   const [history, setHistory] = useLocalStorage(HISTORY_KEY, []);
   const [toast, setToast]     = useState(null);
 
+  // Hydrate history from backend on mount (backend is the source of truth when available)
+  useEffect(() => {
+    apiGetHistory().then((data) => {
+      if (Array.isArray(data)) setHistory(data);
+    });
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   const showToast = (msg, color=C.green) => {
     setToast({ msg, color });
     setTimeout(() => setToast(null), 2500);
   };
 
   const handleSave = useCallback((entry) => {
-    const updated = [{ ...entry, id:Date.now(), savedAt:new Date().toISOString() }, ...history].slice(0,50);
+    const newEntry = { ...entry, id: Date.now(), savedAt: new Date().toISOString() };
+    const updated = [newEntry, ...history].slice(0, 50);
     setHistory(updated);
+    // Persist to backend (best-effort)
+    apiSaveHistory(newEntry);
     showToast("✅ Prompt saved to History!");
   }, [history, setHistory]);
 
-  const clearHistory = () => { setHistory([]); showToast("History cleared", C.red); };
-  const removeEntry  = (id) => setHistory(history.filter(h=>h.id!==id));
+  const clearHistory = () => {
+    setHistory([]);
+    apiClearHistory();
+    showToast("History cleared", C.red);
+  };
+
+  const removeEntry = (id) => {
+    setHistory(history.filter(h => h.id !== id));
+    apiRemoveHistory(id);
+  };
 
   return (
     <div style={{ background:C.bg, minHeight:"100vh", fontFamily:font, color:C.text }}>
