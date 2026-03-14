@@ -4,3 +4,6 @@ build/
 .env.local
 .DS_Store
 *.log
+
+# Backend runtime data (auto-created by the server)
+backend/data/db.json

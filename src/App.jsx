@@ -1,8 +1,27 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import {
   AI_TOOLS, CATEGORIES, TONES, FRAMEWORKS,
   PROMPT_LIBRARY, PROMPT_TIPS, HISTORY_KEY, FAVORITES_KEY
 } from "./data";
+
+// ─────────────────────────────────────────────────────────────
+//  BACKEND API  (set REACT_APP_API_URL in .env to enable)
+// ─────────────────────────────────────────────────────────────
+const API_URL = process.env.REACT_APP_API_URL || null;
+
+async function apiFetch(path, options = {}) {
+  if (!API_URL) return null;
+  try {
+    const res = await fetch(`${API_URL}${path}`, {
+      headers: { "Content-Type": "application/json" },
+      ...options,
+    });
+    if (!res.ok) return null;
+    return await res.json();
+  } catch {
+    return null;
+  }
+}
 
 
 // ─────────────────────────────────────────────────────────────
@@ -839,19 +858,42 @@ export default function App() {
   const [history, setHistory] = useLocalStorage(HISTORY_KEY, []);
   const [toast, setToast]     = useState(null);
 
+  // ── Backend sync: load history from API on mount ──────────
+  useEffect(() => {
+    if (!API_URL) return;
+    apiFetch("/api/prompts").then((data) => {
+      if (Array.isArray(data) && data.length > 0) setHistory(data);
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const showToast = (msg, color=C.green) => {
     setToast({ msg, color });
     setTimeout(() => setToast(null), 2500);
   };
 
   const handleSave = useCallback((entry) => {
-    const updated = [{ ...entry, id:Date.now(), savedAt:new Date().toISOString() }, ...history].slice(0,50);
+    const newEntry = { ...entry, id: Date.now(), savedAt: new Date().toISOString() };
+    const updated  = [newEntry, ...history].slice(0, 50);
     setHistory(updated);
+    // Persist to backend when available
+    apiFetch("/api/prompts", {
+      method: "POST",
+      body: JSON.stringify(newEntry),
+    });
     showToast("✅ Prompt saved to History!");
   }, [history, setHistory]);
 
-  const clearHistory = () => { setHistory([]); showToast("History cleared", C.red); };
-  const removeEntry  = (id) => setHistory(history.filter(h=>h.id!==id));
+  const clearHistory = () => {
+    setHistory([]);
+    apiFetch("/api/prompts", { method: "DELETE" });
+    showToast("History cleared", C.red);
+  };
+
+  const removeEntry = (id) => {
+    setHistory(history.filter(h => h.id !== id));
+    apiFetch(`/api/prompts/${id}`, { method: "DELETE" });
+  };
 
   return (
     <div style={{ background:C.bg, minHeight:"100vh", fontFamily:font, color:C.text }}>
