@@ -4,3 +4,7 @@ build/
 .env.local
 .DS_Store
 *.log
+backend/node_modules/
+backend/.env
+backend/data/history.json
+backend/data/favorites.json
