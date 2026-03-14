@@ -28,7 +28,7 @@ const C = {
   teal: "#0D9488",
 };
 
-const font = "'Google Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
+const font = "'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
 const mono = "'JetBrains Mono', 'Fira Code', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace";
 
 // ─────────────────────────────────────────────────────────────
@@ -901,7 +901,7 @@ export default function App() {
               </div>
             )}
             <a
-              href="https://github.com/your-username/promptcraft-ui"
+              href="https://github.com/faiqaarooj/PromptCraft2"
               target="_blank"
               rel="noreferrer"
               style={{ background:"#F3F4F6", border:`1px solid ${C.border}`, color:C.muted, borderRadius:999, padding:"6px 12px", textDecoration:"none", fontSize:12, fontWeight:500, display:"flex", alignItems:"center", gap:6 }}
@@ -918,7 +918,7 @@ export default function App() {
           <div style={{ maxWidth:1200, margin:"0 auto", display:"grid", gridTemplateColumns:"1fr 1fr 1fr 1fr", gap:16 }}>
             {[
               { icon:"🎯", stat:"5 frameworks", sub:"Battle-tested patterns for any task", color:C.blue },
-              { icon:"📚", stat:"8+ libraries", sub:"Design, code, marketing, business & more", color:C.purple },
+              { icon:"📚", stat:"8+ prompts", sub:"Design, code, marketing, business & more", color:C.purple },
               { icon:"🤖", stat:"10 AI tools", sub:"Works with ChatGPT, Claude, Gemini and more", color:C.green },
               { icon:"🎓", stat:"8 quick laws", sub:"Learn prompt craft in minutes, not hours", color:C.gold },
             ].map((s,i) => (
