@@ -1,0 +1,18 @@
+# CODEOWNERS — every pull request that touches these paths requires a
+# review from the listed owners before it can be merged.
+# Reference: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Default owner for everything in the repository.
+# A review from @faiqaarooj is required on any PR that changes files not
+# matched by a more specific rule below.
+*  @faiqaarooj
+
+# GitHub Actions workflows — require explicit review so no malicious
+# workflow can be merged without the owner's sign-off.
+.github/workflows/  @faiqaarooj
+
+# Security-critical source files: validation schemas, sanitisation,
+# error boundaries, and the main application entry point.
+src/validation.js   @faiqaarooj
+src/ErrorBoundary.jsx  @faiqaarooj
+src/App.jsx         @faiqaarooj

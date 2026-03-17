@@ -1,0 +1,46 @@
+name: CI
+
+# Runs on every pull request targeting main so that branch protection
+# rules can require this check to pass before a PR can be merged.
+on:
+  pull_request:
+    branches: [ main ]
+  # Also run on direct pushes so the status is visible on the branch.
+  push:
+    branches: [ main ]
+
+# Minimal permissions — read-only access to the repo is all that is needed.
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    name: Lint, Build & Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Run build with CI=true so ESLint warnings are treated as errors.
+      # This catches any lint regressions introduced by the PR.
+      - name: Lint & Build
+        run: npm run build
+        env:
+          CI: true
+
+      # CRA test runner — passWithNoTests keeps the job green when there
+      # are no test files yet, while still running any tests that exist.
+      - name: Test
+        run: npm test -- --watchAll=false --passWithNoTests
+        env:
+          CI: true
