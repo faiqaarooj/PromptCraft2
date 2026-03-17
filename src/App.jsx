@@ -297,7 +297,15 @@ function BuilderTab({ onSave }) {
   const fw = useMemo(() => FRAMEWORKS.find(f => f.id === fwId), [fwId]);
   const hasContent = fw?.fields.some(f => fields[f.key]?.trim());
 
-  const selectedTool = useMemo(() => AI_TOOLS.find(t => t.id === toolId), [toolId]);
+  // Simple lookup on a small static array — no memoisation needed.
+  const selectedTool = AI_TOOLS.find(t => t.id === toolId);
+
+  // Stable callback passed to every FieldInput — prevents unnecessary
+  // re-renders of sibling inputs when a single field changes.
+  const handleFieldChange = useCallback((key, v) => {
+    setFields(p => ({ ...p, [key]: v }));
+    setFieldErrors(e => ({ ...e, [key]: "" }));
+  }, []);
 
   // goPhase: when advancing from phase 2 → 3, validate fields first and
   // surface any errors before allowing the user to proceed.
@@ -316,8 +324,8 @@ function BuilderTab({ onSave }) {
 
   const prompt = useMemo(() => {
     if (!fw) return "";
-    // FRAMEWORKS is a static module-level constant; omitting from deps is intentional.
-    // Validate fields before building — strip anything that fails schema for live preview.
+    // Validate fields before building — strips anything that fails schema for live preview.
+    // FRAMEWORKS is a static module-level constant so it is never stale.
     const { result: safeFields } = validateFrameworkFields(fields);
     let p = fw.build(safeFields);
     const tone = TONES.find(t => t.id === toneId);
@@ -423,7 +431,7 @@ function BuilderTab({ onSave }) {
                 </div>
 
                 {fw?.fields.map(f => (
-                  <FieldInput key={f.key} f={f} value={fields[f.key]||""} onChange={v => { setFields(p=>({...p,[f.key]:v})); setFieldErrors(e=>({...e,[f.key]:""})); }} />
+                  <FieldInput key={f.key} f={f} value={fields[f.key]||""} onChange={v => handleFieldChange(f.key, v)} />
                 ))}
                 {Object.values(fieldErrors).some(Boolean) && (
                   <div style={{ color:C.red, fontSize:12, marginBottom:8 }}>
@@ -806,7 +814,8 @@ function QuickTab({ onSave }) {
   const [ideaError, setIdeaError] = useState("");
   const { copied, copy }    = useCopy();
 
-  const selectedTool = useMemo(() => AI_TOOLS.find(t => t.id === toolId), [toolId]);
+  // Simple lookup on a small static array — no memoisation needed.
+  const selectedTool = AI_TOOLS.find(t => t.id === toolId);
 
   function buildQuickPrompt() {
     // Zero-trust input validation via Zod before any processing
