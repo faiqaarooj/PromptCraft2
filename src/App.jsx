@@ -1,9 +1,32 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, memo } from "react";
 import {
   AI_TOOLS, CATEGORIES, TONES, FRAMEWORKS,
   PROMPT_LIBRARY, PROMPT_TIPS, HISTORY_KEY, FAVORITES_KEY
 } from "./data";
 
+
+// ─────────────────────────────────────────────────────────────
+//  MODULE-LEVEL DERIVED DATA (computed once, never recreated)
+// ─────────────────────────────────────────────────────────────
+
+// Pre-normalised for efficient case-insensitive search — avoids repeated
+// .toLowerCase() calls on every keystroke in the Library search box.
+const NORMALIZED_LIBRARY = PROMPT_LIBRARY.map(p => ({
+  ...p,
+  _titleLower: p.title.toLowerCase(),
+  _descLower:  p.desc.toLowerCase(),
+  _tagsLower:  p.tags.map(t => t.toLowerCase()),
+}));
+
+// Data-driven framework keyword mapping used by QuickTab's auto-detection.
+// Replacing the original chain of 15+ .includes() calls with a single
+// array scan so new frameworks can be added without touching logic.
+const FRAMEWORK_KEYWORDS = [
+  { keywords: ["bug", "fix", "error", "broken"],       framework: "S-T-A-R"  },
+  { keywords: ["write", "email", "blog", "post"],      framework: "CO-STAR"  },
+  { keywords: ["build", "create", "make", "develop"],  framework: "RISEN"    },
+  { keywords: ["example", "like this", "similar to"],  framework: "C-A-R-E"  },
+];
 
 // ─────────────────────────────────────────────────────────────
 //  DESIGN TOKENS (minimal Google-style)
@@ -65,7 +88,7 @@ function useCopy() {
 // ─────────────────────────────────────────────────────────────
 //  ATOM COMPONENTS
 // ─────────────────────────────────────────────────────────────
-function Pill({ on, onClick, children, color = C.blue }) {
+const Pill = memo(function Pill({ on, onClick, children, color = C.blue }) {
   return (
     <button onClick={onClick} style={{
       background: on ? color + "22" : "transparent",
@@ -76,7 +99,7 @@ function Pill({ on, onClick, children, color = C.blue }) {
       transition: "all .15s", lineHeight: 1.4,
     }}>{children}</button>
   );
-}
+});
 
 function GBtn({ onClick, children, color = C.blue, disabled, full, sm }) {
   return (
@@ -116,7 +139,7 @@ function Card({ children, glow, style = {}, onClick }) {
   );
 }
 
-function Tag({ color, children }) {
+const Tag = memo(function Tag({ color, children }) {
   return (
     <span style={{
       background: color + "18", color, border: `1px solid ${color}30`,
@@ -124,18 +147,18 @@ function Tag({ color, children }) {
       display: "inline-block", marginRight: 4, marginBottom: 4,
     }}>{children}</span>
   );
-}
+});
 
-function Label({ children, color = C.gold }) {
+const Label = memo(function Label({ children, color = C.gold }) {
   return (
     <div style={{
       fontSize: 11, fontWeight: 800, letterSpacing: 1.5,
       textTransform: "uppercase", color, marginBottom: 10,
     }}>{children}</div>
   );
-}
+});
 
-function TipBox({ text, color = C.blue }) {
+const TipBox = memo(function TipBox({ text, color = C.blue }) {
   return (
     <div style={{
       background: color + "10", border: `1px solid ${color}30`,
@@ -143,7 +166,7 @@ function TipBox({ text, color = C.blue }) {
       fontSize: 11, color: color + "cc", lineHeight: 1.5,
     }}>💡 {text}</div>
   );
-}
+});
 
 function FieldInput({ f, value, onChange }) {
   const [focus, setFocus] = useState(false);
@@ -249,13 +272,14 @@ function BuilderTab({ onSave }) {
   const [checks, setChecks]     = useState(["","",""]);
   const [phase, setPhase]       = useState(1);
 
-  const fw = FRAMEWORKS.find(f => f.id === fwId);
+  const fw = useMemo(() => FRAMEWORKS.find(f => f.id === fwId), [fwId]);
   const hasContent = fw?.fields.some(f => fields[f.key]?.trim());
+
+  const selectedTool = useMemo(() => AI_TOOLS.find(t => t.id === toolId), [toolId]);
 
   const prompt = useMemo(() => {
     if (!fw) return "";
     let p = fw.build(fields);
-    const tool = AI_TOOLS.find(t => t.id === toolId);
     const tone = TONES.find(t => t.id === toneId);
     const adds = [];
     if (tone) adds.push(`TONE: ${tone.label}`);
@@ -263,10 +287,10 @@ function BuilderTab({ onSave }) {
     if (extra) adds.push(`ALSO DO: ${extra}`);
     const qs = checks.filter(Boolean);
     if (qs.length) adds.push(`\nQUALITY CHECK (verify before responding):\n${qs.map(q => `☐ ${q}`).join("\n")}`);
-    if (tool && tool.id !== "any") adds.push(`\n[Optimised for ${tool.name} — ${tool.hint}]`);
+    if (selectedTool && selectedTool.id !== "any") adds.push(`\n[Optimised for ${selectedTool.name} — ${selectedTool.hint}]`);
     if (adds.length) p += "\n\n" + adds.join("\n");
     return p;
-  }, [fw, fields, toolId, toneId, dont, extra, checks]);
+  }, [fw, fields, selectedTool, toneId, dont, extra, checks]);
 
   const score = useMemo(() => {
     let s = 0;
@@ -383,7 +407,7 @@ function BuilderTab({ onSave }) {
               </div>
               {toolId !== "any" && (
                 <div style={{ background:C.purple+"12", border:`1px solid ${C.purple}30`, borderRadius:8, padding:"7px 12px", marginTop:10, fontSize:12, color:C.purple }}>
-                  💡 {AI_TOOLS.find(t=>t.id===toolId)?.hint}
+                  💡 {selectedTool?.hint}
                 </div>
               )}
             </Card>
@@ -431,7 +455,7 @@ function BuilderTab({ onSave }) {
             </Card>
 
             <div style={{ display:"flex", gap:10 }}>
-              <GBtn color={C.green} disabled={!hasContent} onClick={() => onSave({ prompt, framework:fw?.name, tool:AI_TOOLS.find(t=>t.id===toolId)?.name, score, preview:prompt.slice(0,100)+"..." })}>
+              <GBtn color={C.green} disabled={!hasContent} onClick={() => onSave({ prompt, framework:fw?.name, tool:selectedTool?.name, score, preview:prompt.slice(0,100)+"..." })}>
                 💾 Save to History
               </GBtn>
               <button onClick={() => { setFields({}); setToneId(""); setDont(""); setExtra(""); setChecks(["","",""]); setPhase(1); }} style={{ background:"transparent", border:`1.5px solid ${C.border}`, color:C.muted, borderRadius:10, padding:"11px 20px", cursor:"pointer", fontFamily:font, fontSize:14 }}>
@@ -474,6 +498,7 @@ function BuilderTab({ onSave }) {
 function LibraryCard({ item, isFav, onFav }) {
   const [open, setOpen] = useState(false);
   const { copied, copy } = useCopy();
+  const toolInfo = AI_TOOLS.find(x => x.id === item.tool);
   return (
     <Card glow={open ? item.color : undefined}>
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:10 }}>
@@ -482,7 +507,7 @@ function LibraryCard({ item, isFav, onFav }) {
           <div style={{ color:C.muted, fontSize:12, marginBottom:8 }}>{item.desc}</div>
           <div style={{ display:"flex", flexWrap:"wrap", gap:4 }}>
             {item.tags.map(t => <Tag key={t} color={item.color}>{t}</Tag>)}
-            <Tag color={C.muted}>{AI_TOOLS.find(x=>x.id===item.tool)?.icon} {AI_TOOLS.find(x=>x.id===item.tool)?.name}</Tag>
+            <Tag color={C.muted}>{toolInfo?.icon} {toolInfo?.name}</Tag>
           </div>
         </div>
         <div style={{ display:"flex", gap:6, flexShrink:0 }}>
@@ -513,18 +538,26 @@ function LibraryTab() {
   const [search, setSearch] = useState("");
   const [showFavsOnly, setShowFavsOnly] = useState(false);
 
-  const toggleFav = (id) => setFavs(favs.includes(id) ? favs.filter(f=>f!==id) : [...favs, id]);
+  const favsSet = useMemo(() => new Set(favs), [favs]);
 
-  const filtered = useMemo(() => PROMPT_LIBRARY.filter(p => {
+  const toggleFav = useCallback((id) =>
+    setFavs(prev => {
+      const s = new Set(prev);
+      if (s.has(id)) { s.delete(id); } else { s.add(id); }
+      return [...s];
+    }),
+  [setFavs]);
+
+  const filtered = useMemo(() => NORMALIZED_LIBRARY.filter(p => {
     if (cat !== "all" && p.category !== cat) return false;
     if (tool !== "all" && p.tool !== tool && tool !== "any") return false;
-    if (showFavsOnly && !favs.includes(p.id)) return false;
+    if (showFavsOnly && !favsSet.has(p.id)) return false;
     if (search) {
       const q = search.toLowerCase();
-      return p.title.toLowerCase().includes(q) || p.desc.toLowerCase().includes(q) || p.tags.some(t=>t.toLowerCase().includes(q));
+      return p._titleLower.includes(q) || p._descLower.includes(q) || p._tagsLower.some(t => t.includes(q));
     }
     return true;
-  }), [cat, tool, search, showFavsOnly, favs]);
+  }), [cat, tool, search, showFavsOnly, favsSet]);
 
   return (
     <div>
@@ -563,7 +596,7 @@ function LibraryTab() {
         </div>
       ) : (
         <div style={{ display:"grid", gap:14 }}>
-          {filtered.map(item => <LibraryCard key={item.id} item={item} isFav={favs.includes(item.id)} onFav={toggleFav} />)}
+          {filtered.map(item => <LibraryCard key={item.id} item={item} isFav={favsSet.has(item.id)} onFav={toggleFav} />)}
         </div>
       )}
     </div>
@@ -717,22 +750,19 @@ function QuickTab({ onSave }) {
   const [loading, setLoading] = useState(false);
   const { copied, copy }    = useCopy();
 
+  const selectedTool = useMemo(() => AI_TOOLS.find(t => t.id === toolId), [toolId]);
+
   function buildQuickPrompt() {
     if (!idea.trim()) return;
     setLoading(true);
 
-    const tool = AI_TOOLS.find(t=>t.id===toolId);
     const cat  = CATEGORIES.find(c=>c.id===catId);
 
-    // Smart framework detection
+    // Smart framework detection — data-driven, O(n) over keywords array
     const lower = idea.toLowerCase();
-    const fw = lower.includes("bug")||lower.includes("fix")||lower.includes("error")||lower.includes("broken") ? "S-T-A-R"
-             : lower.includes("write")||lower.includes("email")||lower.includes("blog")||lower.includes("post") ? "CO-STAR"
-             : lower.includes("build")||lower.includes("create")||lower.includes("make")||lower.includes("develop") ? "RISEN"
-             : lower.includes("example")||lower.includes("like this")||lower.includes("similar to") ? "C-A-R-E"
-             : "R-C-A-T";
+    const fw = FRAMEWORK_KEYWORDS.find(m => m.keywords.some(k => lower.includes(k)))?.framework ?? "R-C-A-T";
 
-    const toolNote = tool && tool.id!=="any" ? `\n[Optimised for ${tool.name} — ${tool.hint}]` : "";
+    const toolNote = selectedTool && selectedTool.id!=="any" ? `\n[Optimised for ${selectedTool.name} — ${selectedTool.hint}]` : "";
     const catNote  = cat ? `\nCATEGORY: ${cat.label}` : "";
 
     const prompt = `You are a world-class expert in ${cat?.label||"this field"} with deep practical experience.
@@ -806,7 +836,7 @@ ${toolNote}
               <button onClick={() => copy(result)} style={{ background:copied?C.green+"22":C.gold+"22", border:`1.5px solid ${copied?C.green:C.gold}`, color:copied?C.green:C.gold, borderRadius:9, padding:"8px 18px", cursor:"pointer", fontFamily:font, fontSize:13, fontWeight:700 }}>
                 {copied?"✅ Copied!":"📋 Copy Prompt"}
               </button>
-              <GBtn sm color={C.green} onClick={() => onSave({ prompt:result, framework:"Quick", tool:AI_TOOLS.find(t=>t.id===toolId)?.name, score:70, preview:result.slice(0,100)+"..." })}>
+              <GBtn sm color={C.green} onClick={() => onSave({ prompt:result, framework:"Quick", tool:selectedTool?.name, score:70, preview:result.slice(0,100)+"..." })}>
                 💾 Save
               </GBtn>
             </div>
