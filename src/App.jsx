@@ -299,14 +299,25 @@ function BuilderTab({ onSave }) {
 
   const selectedTool = useMemo(() => AI_TOOLS.find(t => t.id === toolId), [toolId]);
 
+  // goPhase: when advancing from phase 2 → 3, validate fields first and
+  // surface any errors before allowing the user to proceed.
   const goPhase = useCallback((n) => {
+    if (phase === 2 && n === 3) {
+      const { errors, ok } = validateFrameworkFields(fields);
+      if (!ok) {
+        setFieldErrors(errors);
+        return;
+      }
+      setFieldErrors({});
+    }
     setPhaseDir(n > phase ? 1 : -1);
     setPhase(n);
-  }, [phase]);
+  }, [phase, fields]);
 
   const prompt = useMemo(() => {
     if (!fw) return "";
-    // Validate fields before building — strip anything that fails schema
+    // FRAMEWORKS is a static module-level constant; omitting from deps is intentional.
+    // Validate fields before building — strip anything that fails schema for live preview.
     const { result: safeFields } = validateFrameworkFields(fields);
     let p = fw.build(safeFields);
     const tone = TONES.find(t => t.id === toneId);
