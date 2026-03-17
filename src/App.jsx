@@ -3,6 +3,7 @@ import {
   AI_TOOLS, CATEGORIES, TONES, FRAMEWORKS,
   PROMPT_LIBRARY, PROMPT_TIPS, HISTORY_KEY, FAVORITES_KEY
 } from "./data";
+import ThreeTransitionUI from "./components/ThreeTransitionUI";
 
 
 // ─────────────────────────────────────────────────────────────
@@ -838,6 +839,8 @@ export default function App() {
   const [tab, setTab]         = useState("quick");
   const [history, setHistory] = useLocalStorage(HISTORY_KEY, []);
   const [toast, setToast]     = useState(null);
+  // Transition state: false means showing 3D transition, true means main app
+  const [transitionComplete, setTransitionComplete] = useState(false);
 
   const showToast = (msg, color=C.green) => {
     setToast({ msg, color });
@@ -852,6 +855,10 @@ export default function App() {
 
   const clearHistory = () => { setHistory([]); showToast("History cleared", C.red); };
   const removeEntry  = (id) => setHistory(history.filter(h=>h.id!==id));
+
+  if (!transitionComplete) {
+    return <ThreeTransitionUI onComplete={() => setTransitionComplete(true)} />;
+  }
 
   return (
     <div style={{ background:C.bg, minHeight:"100vh", fontFamily:font, color:C.text }}>
