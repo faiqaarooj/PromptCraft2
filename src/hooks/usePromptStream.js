@@ -17,10 +17,17 @@ export const usePromptStream = () => {
         }
 
         try {
+            const payload = {
+                idea: input,
+                target_tool: "Universal",
+                user_id: "anon",
+                preferences: { domain_signals: domain }
+            };
+
             const response = await fetch("http://localhost:8000/api/v1/transform/stream", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ input, domain }),
+                body: JSON.stringify(payload),
             });
 
             if (!response.ok) {
@@ -50,7 +57,7 @@ export const usePromptStream = () => {
                         }
                         try {
                             const data = JSON.parse(dataStr);
-                            setResult(prev => prev + data.text);
+                            setResult(prev => prev + data.token);
                         } catch (e) {
                             console.error("Failed to parse SSE chunk", e, dataStr);
                         }

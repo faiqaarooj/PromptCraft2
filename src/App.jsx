@@ -872,10 +872,11 @@ export default function App() {
   if (!transitionComplete) {
     return (
       <ThreeTransitionUI
-        onComplete={() => {
+        onComplete={(finalInput) => {
           setTransitionComplete(true);
-          if (pendingPrompt) {
-            startStream(pendingPrompt, domain);
+          const inputToStream = pendingPrompt || finalInput;
+          if (inputToStream) {
+            startStream(inputToStream, domain);
           }
         }}
         onCraftSubmit={handleCraftSubmit}
@@ -966,7 +967,7 @@ export default function App() {
       <main style={{ maxWidth:1200, margin:"0 auto", padding:"32px 32px 80px" }}>
         {/* Dynamic Reveal of Cloud Output (Expert Output) */}
         {(isLoading || result || error) && (
-          <div style={{ marginBottom: 32 }}>
+          <div className="expert-output-card" style={{ marginBottom: 32 }}>
             <div style={{ color:C.text, fontSize:22, fontWeight:900, marginBottom:16 }}>Expert Output (Neural Stream)</div>
             <div style={{
               background: C.card, border: `1px solid ${isLoading ? C.cyan + "55" : C.gold + "55"}`,

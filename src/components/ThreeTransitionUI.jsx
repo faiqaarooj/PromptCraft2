@@ -188,7 +188,7 @@ export default function ThreeTransitionUI({ onComplete, onCraftSubmit }) {
       if (onCraftSubmit) {
         onCraftSubmit(sanitizedInput);
       }
-      onComplete();
+      onComplete(sanitizedInput);
     } else {
       const newAttempts = loginAttempts + 1;
       setLoginAttempts(newAttempts);
