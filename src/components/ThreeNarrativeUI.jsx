@@ -1,9 +1,9 @@
-import React, { useRef, useState, useMemo, useEffect, useCallback } from 'react';
+import React, { useRef, useState, useMemo, useEffect } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { motion, AnimatePresence } from 'framer-motion';
 import * as THREE from 'three';
 import { usePromptStream } from '../hooks/usePromptStream';
-import { User, LogIn, Github, Apple, Sparkles, AlertTriangle, ArrowRight } from 'lucide-react';
+import { Github, Apple, Sparkles, AlertTriangle, ArrowRight } from 'lucide-react';
 
 // --- 1. THE 3D SCENE (Three.js) ---
 

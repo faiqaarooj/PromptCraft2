@@ -4,8 +4,6 @@ import {
   PROMPT_LIBRARY, PROMPT_TIPS, HISTORY_KEY, FAVORITES_KEY
 } from "./data";
 import { ThreeNarrativeUI } from "./components/ThreeNarrativeUI";
-import { usePromptStream } from "./hooks/usePromptStream";
-import { usePreferenceStore } from "./store/preferenceStore";
 
 
 // ─────────────────────────────────────────────────────────────
@@ -842,9 +840,7 @@ export default function App() {
   const [tab, setTab]         = useState("quick");
   const [history, setHistory] = useLocalStorage(HISTORY_KEY, []);
   const [toast, setToast]     = useState(null);
-  const [transitionComplete, setTransitionComplete] = useState(false);
-  const { domain } = usePreferenceStore();
-  const { startStream, isLoading, result, error } = usePromptStream();
+
   const showToast = (msg, color=C.green) => {
     setToast({ msg, color });
     setTimeout(() => setToast(null), 2500);
@@ -856,10 +852,7 @@ export default function App() {
   }, [history, setHistory]);
   const clearHistory = () => { setHistory([]); showToast("History cleared", C.red); };
   const removeEntry  = (id) => setHistory(history.filter(h=>h.id!==id));
-  const [pendingPrompt, setPendingPrompt] = useState(null);
-  const handleCraftSubmit = (sanitizedInput) => {
-    setPendingPrompt(sanitizedInput);
-  };
+
 
   if (showNarrative) {
     return (
@@ -956,27 +949,6 @@ export default function App() {
 
       {/* ── CONTENT ── */}
       <main style={{ maxWidth:1200, margin:"0 auto", padding:"32px 32px 80px" }}>
-        {/* Dynamic Reveal of Cloud Output (Expert Output) */}
-        {(isLoading || result || error) && (
-          <div className="expert-output-card" style={{ marginBottom: 32 }}>
-            <div style={{ color:C.text, fontSize:22, fontWeight:900, marginBottom:16 }}>Expert Output (Neural Stream)</div>
-            <div style={{
-              background: C.card, border: `1px solid ${isLoading ? C.cyan + "55" : C.gold + "55"}`,
-              borderRadius: 16, padding: 20,
-              boxShadow: isLoading ? `0 0 32px ${C.cyan}18` : `0 0 32px ${C.gold}18`,
-              transition: "all .2s"
-            }}>
-              {error && <div style={{ color: C.red }}>Error: {error}</div>}
-              {isLoading && !result && <div style={{ color: C.muted, fontStyle: "italic" }}>Connecting to AI Orchestrator...</div>}
-              <pre style={{
-                  color: C.text, fontSize: 13, lineHeight: 1.8,
-                  whiteSpace: "pre-wrap", wordBreak: "break-word",
-                  margin: 0, fontFamily: mono,
-              }}>{result}</pre>
-              {isLoading && result && <span style={{ color: C.blue, marginLeft: 8 }}>...</span>}
-            </div>
-          </div>
-        )}
 
         {tab==="quick"   && <QuickTab onSave={handleSave} />}
         {tab==="builder" && <BuilderTab onSave={handleSave} />}
