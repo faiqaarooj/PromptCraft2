@@ -6,29 +6,35 @@ import {
 
 
 // ─────────────────────────────────────────────────────────────
-//  DESIGN TOKENS (minimal Google-style)
+//  DESIGN TOKENS — Google / Material 3 inspired
 // ─────────────────────────────────────────────────────────────
 const C = {
-  bg: "#F9FAFB",
+  bg: "#F7F9FC",
   surface: "#FFFFFF",
   card: "#FFFFFF",
-  border: "#E5E7EB",
-  borderHi: "#D1D5DB",
-  text: "#111827",
-  muted: "#6B7280",
-  dim: "#9CA3AF",
-  gold: "#FDB022",
-  blue: "#1D4ED8",
-  green: "#16A34A",
-  pink: "#DB2777",
-  purple: "#6D28D9",
-  cyan: "#0891B2",
-  orange: "#EA580C",
-  red: "#DC2626",
-  teal: "#0D9488",
+  border: "#E3EAF4",
+  borderHi: "#D7DFEB",
+  text: "#1F1F1F",
+  muted: "#5F6368",
+  dim: "#8A9099",
+  gold: "#F6B704",
+  blue: "#1A73E8",
+  green: "#34A853",
+  pink: "#D6495F",
+  purple: "#7E57C2",
+  cyan: "#1E8EFB",
+  orange: "#FB8C00",
+  red: "#E53935",
+  teal: "#0F9D58",
 };
 
-const font = "'Google Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
+const radius = { sm: 8, md: 12, lg: 16, pill: 999 };
+const shadow = {
+  low: "0 1px 3px rgba(17, 24, 39, 0.08)",
+  med: "0 4px 12px rgba(17, 24, 39, 0.10)",
+};
+
+const font = "'Google Sans', 'Inter', 'Roboto', system-ui, -apple-system, 'Segoe UI', sans-serif";
 const mono = "'JetBrains Mono', 'Fira Code', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace";
 
 // ─────────────────────────────────────────────────────────────
@@ -59,7 +65,7 @@ function useCopy() {
     setCopied(true);
     setTimeout(() => setCopied(false), 2200);
   }, []);
-  return { copied, copy };
+  return { copied, copy }; 
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -67,14 +73,24 @@ function useCopy() {
 // ─────────────────────────────────────────────────────────────
 function Pill({ on, onClick, children, color = C.blue }) {
   return (
-    <button onClick={onClick} style={{
-      background: on ? color + "22" : "transparent",
-      border: `1.5px solid ${on ? color : C.border}`,
-      color: on ? color : C.muted, borderRadius: 8,
-      padding: "5px 13px", cursor: "pointer", fontSize: 12,
-      fontWeight: on ? 700 : 500, fontFamily: font,
-      transition: "all .15s", lineHeight: 1.4,
-    }}>{children}</button>
+    <button
+      onClick={onClick}
+      style={{
+        background: on ? `${color}14` : "#FFFFFF",
+        border: `1.5px solid ${on ? color : C.border}`,
+        color: on ? color : C.muted,
+        borderRadius: radius.md,
+        padding: "6px 14px",
+        cursor: "pointer",
+        fontSize: 12,
+        fontWeight: on ? 700 : 600,
+        fontFamily: font,
+        transition: "all .15s ease",
+        boxShadow: on ? shadow.low : "none",
+      }}
+    >
+      {children}
+    </button>
   );
 }
 
@@ -83,20 +99,22 @@ function GBtn({ onClick, children, color = C.blue, disabled, full, sm }) {
     <button
       onClick={onClick}
       disabled={disabled}
+      onMouseDown={(e) => !disabled && (e.currentTarget.style.transform = "translateY(1px)")}
+      onMouseUp={(e) => (e.currentTarget.style.transform = "translateY(0)")}
       style={{
-        background: disabled ? "#E5E7EB" : color,
+        background: disabled ? "#E8EAED" : color,
         border: "none",
         color: disabled ? C.muted : "#FFFFFF",
-        borderRadius: 999,
+        borderRadius: radius.pill,
         fontFamily: font,
-        padding: sm ? "7px 18px" : "10px 22px",
+        padding: sm ? "8px 18px" : "11px 22px",
         cursor: disabled ? "not-allowed" : "pointer",
         fontSize: sm ? 13 : 14,
-        fontWeight: 600,
-        boxShadow: disabled ? "none" : "0 1px 2px rgba(15, 23, 42, 0.12)",
-        transition: "background-color .15s ease, box-shadow .15s ease, transform .05s ease",
+        fontWeight: 700,
+        boxShadow: disabled ? "none" : shadow.med,
+        transition: "transform .05s ease, box-shadow .15s ease, background .15s ease",
         width: full ? "100%" : "auto",
-        letterSpacing: 0,
+        letterSpacing: 0.1,
       }}
     >
       {children}
@@ -106,13 +124,23 @@ function GBtn({ onClick, children, color = C.blue, disabled, full, sm }) {
 
 function Card({ children, glow, style = {}, onClick }) {
   return (
-    <div onClick={onClick} style={{
-      background: C.card, border: `1px solid ${glow ? glow + "55" : C.border}`,
-      borderRadius: 16, padding: 20,
-      boxShadow: glow ? `0 0 32px ${glow}18` : "0 4px 20px #00000040",
-      cursor: onClick ? "pointer" : "default",
-      transition: "all .2s", ...style,
-    }}>{children}</div>
+    <div
+      onClick={onClick}
+      style={{
+        background: C.card,
+        border: `1px solid ${glow ? glow + "44" : C.border}`,
+        borderRadius: radius.lg,
+        padding: 20,
+        boxShadow: glow ? `0 6px 24px ${glow}33` : shadow.low,
+        cursor: onClick ? "pointer" : "default",
+        transition: "box-shadow .15s ease, transform .1s ease, border-color .15s ease",
+        ...style,
+      }}
+      onMouseEnter={(e) => (e.currentTarget.style.boxShadow = glow ? `0 8px 28px ${glow}44` : shadow.med)}
+      onMouseLeave={(e) => (e.currentTarget.style.boxShadow = glow ? `0 6px 24px ${glow}33` : shadow.low)}
+    >
+      {children}
+    </div>
   );
 }
 
@@ -290,14 +318,15 @@ function BuilderTab({ onSave }) {
       {/* ── LEFT ── */}
       <div>
         {/* Step indicator */}
-        <div style={{ display:"flex", gap:0, marginBottom:24, background:C.surface, borderRadius:12, padding:4, border:`1px solid ${C.border}` }}>
+        <div style={{ display:"flex", gap:0, marginBottom:24, background:C.surface, borderRadius:radius.lg, padding:4, border:`1px solid ${C.border}`, boxShadow:shadow.low }}>
           {STEPS.map((s,i) => (
             <button key={s.n} onClick={() => setPhase(s.n)} style={{
               flex:1, padding:"10px 0", border:"none", cursor:"pointer",
-              borderRadius:9, fontFamily:font, fontSize:13, fontWeight:700,
+              borderRadius:radius.md, fontFamily:font, fontSize:13, fontWeight:700,
               background: phase===s.n ? `linear-gradient(135deg,${C.blue},${C.purple})` : "transparent",
               color: phase===s.n ? "#fff" : C.muted,
               transition:"all .2s",
+              boxShadow: phase===s.n ? shadow.low : "none"
             }}>{s.icon} {s.label}</button>
           ))}
         </div>
@@ -312,11 +341,11 @@ function BuilderTab({ onSave }) {
             <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12, marginBottom:20 }}>
               {FRAMEWORKS.map(f => (
                 <button key={f.id} onClick={() => { setFwId(f.id); setFields({}); setPhase(2); }} style={{
-                  background: fwId===f.id ? f.color+"18" : C.card,
+                  background: fwId===f.id ? f.color+"14" : C.card,
                   border: `2px solid ${fwId===f.id ? f.color : C.border}`,
-                  borderRadius:14, padding:"16px 18px", cursor:"pointer", textAlign:"left",
+                  borderRadius:radius.lg, padding:"16px 18px", cursor:"pointer", textAlign:"left",
                   transition:"all .15s",
-                  boxShadow: fwId===f.id ? `0 0 24px ${f.color}22` : "none",
+                  boxShadow: fwId===f.id ? `0 0 24px ${f.color}22` : shadow.low,
                 }}>
                   <div style={{ display:"flex", justifyContent:"space-between", marginBottom:6 }}>
                     <span style={{ color: fwId===f.id ? f.color : C.text, fontWeight:900, fontSize:20 }}>{f.name}</span>
@@ -324,7 +353,7 @@ function BuilderTab({ onSave }) {
                   </div>
                   <div style={{ color: fwId===f.id ? f.color+"cc" : C.muted, fontSize:12, fontWeight:700, marginBottom:6 }}>{f.tagline}</div>
                   <div style={{ color:C.dim, fontSize:11, marginBottom:8 }}>Best for: {f.best}</div>
-                  <div style={{ background:C.surface, borderRadius:6, padding:"7px 10px" }}>
+                  <div style={{ background:C.surface, borderRadius:radius.md, padding:"7px 10px", border:`1px solid ${C.border}` }}>
                     <span style={{ color:C.gold, fontSize:11, fontWeight:700 }}>Why it works: </span>
                     <span style={{ color:C.muted, fontSize:11 }}>{f.whyItWorks}</span>
                   </div>
@@ -339,14 +368,14 @@ function BuilderTab({ onSave }) {
         {phase === 2 && (
           <div>
             <div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:20 }}>
-              <button onClick={() => setPhase(1)} style={{ background:"transparent", border:`1.5px solid ${C.border}`, color:C.muted, borderRadius:8, padding:"7px 14px", cursor:"pointer", fontFamily:font, fontSize:12 }}>← Back</button>
+              <button onClick={() => setPhase(1)} style={{ background:"transparent", border:`1.5px solid ${C.border}`, color:C.muted, borderRadius:radius.md, padding:"7px 14px", cursor:"pointer", fontFamily:font, fontSize:12 }}>← Back</button>
               <div>
                 <div style={{ color:C.text, fontWeight:900, fontSize:18 }}>Fill In Your Details</div>
                 <div style={{ color:C.muted, fontSize:12 }}>Each field makes your prompt smarter. Read the blue tip under each one.</div>
               </div>
             </div>
 
-            <div style={{ background:`linear-gradient(135deg,${fw.color}18,${fw.color}08)`, border:`1px solid ${fw.color}33`, borderRadius:10, padding:"12px 16px", marginBottom:20 }}>
+            <div style={{ background:`linear-gradient(135deg,${fw.color}18,${fw.color}08)`, border:`1px solid ${fw.color}33`, borderRadius:radius.md, padding:"12px 16px", marginBottom:20 }}>
               <span style={{ color:fw.color, fontWeight:800, fontSize:13 }}>{fw.name}</span>
               <span style={{ color:C.muted, fontSize:12 }}> — {fw.tagline}</span>
             </div>
@@ -364,7 +393,7 @@ function BuilderTab({ onSave }) {
         {phase === 3 && (
           <div>
             <div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:20 }}>
-              <button onClick={() => setPhase(2)} style={{ background:"transparent", border:`1.5px solid ${C.border}`, color:C.muted, borderRadius:8, padding:"7px 14px", cursor:"pointer", fontFamily:font, fontSize:12 }}>← Back</button>
+              <button onClick={() => setPhase(2)} style={{ background:"transparent", border:`1.5px solid ${C.border}`, color:C.muted, borderRadius:radius.md, padding:"7px 14px", cursor:"pointer", fontFamily:font, fontSize:12 }}>← Back</button>
               <div>
                 <div style={{ color:C.text, fontWeight:900, fontSize:18 }}>Enhance Your Prompt</div>
                 <div style={{ color:C.muted, fontSize:12 }}>Each enhancement boosts quality. Quality checklist is the most powerful.</div>
@@ -382,7 +411,7 @@ function BuilderTab({ onSave }) {
                 ))}
               </div>
               {toolId !== "any" && (
-                <div style={{ background:C.purple+"12", border:`1px solid ${C.purple}30`, borderRadius:8, padding:"7px 12px", marginTop:10, fontSize:12, color:C.purple }}>
+                <div style={{ background:C.purple+"12", border:`1px solid ${C.purple}30`, borderRadius:radius.md, padding:"7px 12px", marginTop:10, fontSize:12, color:C.purple }}>
                   💡 {AI_TOOLS.find(t=>t.id===toolId)?.hint}
                 </div>
               )}
@@ -405,7 +434,7 @@ function BuilderTab({ onSave }) {
               <input
                 placeholder='e.g. "Do not use jargon. Do not exceed 200 words. Do not suggest a rewrite."'
                 value={dont} onChange={e => setDont(e.target.value)}
-                style={{ width:"100%", background:C.surface, border:`1.5px solid ${C.border}`, borderRadius:10, padding:"10px 14px", color:C.text, fontSize:13, fontFamily:font, outline:"none", boxSizing:"border-box" }}
+                style={{ width:"100%", background:C.surface, border:`1.5px solid ${C.border}`, borderRadius:radius.md, padding:"10px 14px", color:C.text, fontSize:13, fontFamily:font, outline:"none", boxSizing:"border-box" }}
               />
             </Card>
 
@@ -414,9 +443,9 @@ function BuilderTab({ onSave }) {
               <div style={{ color:C.muted, fontSize:12, marginBottom:10 }}>Add 2-3 questions the AI must verify before responding. Catches 80% of mistakes.</div>
               {checks.map((c,i) => (
                 <input key={i}
-                  placeholder={["☐ Does the output achieve the main goal?","☐ Is it within the requested length?","☐ Is the tone consistent throughout?"][i]}
+                  placeholder={"☐ Does the output achieve the main goal?"}
                   value={c} onChange={e => setChecks(p => p.map((x,j)=>j===i?e.target.value:x))}
-                  style={{ width:"100%", background:C.surface, border:`1.5px solid ${C.border}`, borderRadius:10, padding:"9px 14px", color:C.text, fontSize:13, fontFamily:font, outline:"none", boxSizing:"border-box", marginBottom:8 }}
+                  style={{ width:"100%", background:C.surface, border:`1.5px solid ${C.border}`, borderRadius:radius.md, padding:"9px 14px", color:C.text, fontSize:13, fontFamily:font, outline:"none", boxSizing:"border-box", marginBottom:8 }}
                 />
               ))}
             </Card>
@@ -426,7 +455,7 @@ function BuilderTab({ onSave }) {
               <input
                 placeholder='e.g. "Include 3 real-world examples. Explain your reasoning."'
                 value={extra} onChange={e => setExtra(e.target.value)}
-                style={{ width:"100%", background:C.surface, border:`1.5px solid ${C.border}`, borderRadius:10, padding:"10px 14px", color:C.text, fontSize:13, fontFamily:font, outline:"none", boxSizing:"border-box" }}
+                style={{ width:"100%", background:C.surface, border:`1.5px solid ${C.border}`, borderRadius:radius.md, padding:"10px 14px", color:C.text, fontSize:13, fontFamily:font, outline:"none", boxSizing:"border-box" }}
               />
             </Card>
 
@@ -434,7 +463,7 @@ function BuilderTab({ onSave }) {
               <GBtn color={C.green} disabled={!hasContent} onClick={() => onSave({ prompt, framework:fw?.name, tool:AI_TOOLS.find(t=>t.id===toolId)?.name, score, preview:prompt.slice(0,100)+"..." })}>
                 💾 Save to History
               </GBtn>
-              <button onClick={() => { setFields({}); setToneId(""); setDont(""); setExtra(""); setChecks(["","",""]); setPhase(1); }} style={{ background:"transparent", border:`1.5px solid ${C.border}`, color:C.muted, borderRadius:10, padding:"11px 20px", cursor:"pointer", fontFamily:font, fontSize:14 }}>
+              <button onClick={() => { setFields({}); setToneId(""); setDont(""); setExtra(""); setChecks(["","",""]); setPhase(1); }} style={{ background:"transparent", border:`1.5px solid ${C.border}`, color:C.muted, borderRadius:radius.md, padding:"11px 20px", cursor:"pointer", fontFamily:font, fontSize:14 }}>
                 ↺ Reset All
               </button>
             </div>
@@ -486,19 +515,19 @@ function LibraryCard({ item, isFav, onFav }) {
           </div>
         </div>
         <div style={{ display:"flex", gap:6, flexShrink:0 }}>
-          <button onClick={() => onFav(item.id)} style={{ background:isFav?C.gold+"22":"transparent", border:`1.5px solid ${isFav?C.gold:C.border}`, color:isFav?C.gold:C.dim, borderRadius:8, padding:"6px 10px", cursor:"pointer", fontSize:14 }}>
+          <button onClick={() => onFav(item.id)} style={{ background:isFav?C.gold+"22":"transparent", border:`1.5px solid ${isFav?C.gold:C.border}`, color:isFav?C.gold:C.dim, borderRadius:radius.md, padding:"6px 10px", cursor:"pointer", fontSize:14 }}>
             {isFav?"★":"☆"}
           </button>
-          <button onClick={() => copy(item.prompt)} style={{ background:copied?C.green+"22":item.color+"22", border:`1.5px solid ${copied?C.green:item.color}`, color:copied?C.green:item.color, borderRadius:8, padding:"6px 14px", cursor:"pointer", fontFamily:font, fontSize:12, fontWeight:700 }}>
+          <button onClick={() => copy(item.prompt)} style={{ background:copied?C.green+"22":item.color+"22", border:`1.5px solid ${copied?C.green:item.color}`, color:copied?C.green:item.color, borderRadius:radius.md, padding:"6px 14px", cursor:"pointer", fontFamily:font, fontSize:12, fontWeight:700 }}>
             {copied?"✅ Copied":"📋 Copy"}
           </button>
-          <button onClick={() => setOpen(!open)} style={{ background:"transparent", border:`1.5px solid ${C.border}`, color:C.muted, borderRadius:8, padding:"6px 12px", cursor:"pointer", fontFamily:font, fontSize:12 }}>
+          <button onClick={() => setOpen(!open)} style={{ background:"transparent", border:`1.5px solid ${C.border}`, color:C.muted, borderRadius:radius.md, padding:"6px 12px", cursor:"pointer", fontFamily:font, fontSize:12 }}>
             {open?"▲":"▼"}
           </button>
         </div>
       </div>
       {open && (
-        <div style={{ background:C.surface, borderRadius:10, padding:14, border:`1px solid ${item.color}33`, maxHeight:320, overflowY:"auto" }}>
+        <div style={{ background:C.surface, borderRadius:radius.md, padding:14, border:`1px solid ${item.color}33`, maxHeight:320, overflowY:"auto" }}>
           <pre style={{ color:C.text, fontSize:11, lineHeight:1.8, whiteSpace:"pre-wrap", wordBreak:"break-word", margin:0, fontFamily:mono }}>{item.prompt}</pre>
         </div>
       )}
@@ -510,7 +539,7 @@ function LibraryTab() {
   const [favs, setFavs] = useLocalStorage(FAVORITES_KEY, []);
   const [cat, setCat]   = useState("all");
   const [tool, setTool] = useState("all");
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState(");
   const [showFavsOnly, setShowFavsOnly] = useState(false);
 
   const toggleFav = (id) => setFavs(favs.includes(id) ? favs.filter(f=>f!==id) : [...favs, id]);
@@ -534,22 +563,22 @@ function LibraryTab() {
       </div>
 
       {/* Filters */}
-      <div style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:14, padding:16, marginBottom:20 }}>
+      <div style={{ background:C.card, border:`1px solid ${C.border}`, borderRadius:radius.lg, padding:16, marginBottom:20, boxShadow:shadow.low }}>
         <div style={{ display:"flex", gap:10, marginBottom:12, flexWrap:"wrap", alignItems:"center" }}>
           <input
             placeholder="🔍 Search prompts..."
             value={search} onChange={e=>setSearch(e.target.value)}
-            style={{ flex:1, minWidth:180, background:C.surface, border:`1.5px solid ${C.border}`, borderRadius:9, padding:"8px 14px", color:C.text, fontSize:13, fontFamily:font, outline:"none" }}
+            style={{ flex:1, minWidth:180, background:C.surface, border:`1.5px solid ${C.border}`, borderRadius:radius.md, padding:"8px 14px", color:C.text, fontSize:13, fontFamily:font, outline:"none" }}
           />
           <Pill on={showFavsOnly} color={C.gold} onClick={()=>setShowFavsOnly(!showFavsOnly)}>★ Favourites ({favs.length})</Pill>
         </div>
         <div style={{ display:"flex", gap:6, flexWrap:"wrap", marginBottom:10 }}>
           <Pill on={cat==="all"} color={C.blue} onClick={()=>setCat("all")}>All Categories</Pill>
-          {CATEGORIES.map(c=><Pill key={c.id} on={cat===c.id} color={c.color} onClick={()=>setCat(c.id)}>{c.icon} {c.label}</Pill>)}
+          {CATEGORIES.map(c=><Pill key={c.id} on={cat===c.id} color={c.color} onClick={()=>setCat(c.id)}>{c.icon} {c.label}</Pill>)})}
         </div>
         <div style={{ display:"flex", gap:6, flexWrap:"wrap" }}>
           <Pill on={tool==="all"} color={C.muted} onClick={()=>setTool("all")}>All Tools</Pill>
-          {AI_TOOLS.map(t=><Pill key={t.id} on={tool===t.id} color={C.purple} onClick={()=>setTool(t.id)}>{t.icon} {t.name}</Pill>)}
+          {AI_TOOLS.map(t=><Pill key={t.id} on={tool===t.id} color={C.purple} onClick={()=>setTool(t.id)}>{t.icon} {t.name}</Pill>)})}
         </div>
       </div>
 
@@ -591,7 +620,7 @@ function HistoryTab({ history, onClear, onRemove }) {
           <div style={{ color:C.text, fontSize:22, fontWeight:900 }}>Saved Prompts</div>
           <div style={{ color:C.muted, fontSize:13 }}>{history.length} prompt{history.length!==1?"s":""} saved locally</div>
         </div>
-        <button onClick={onClear} style={{ background:C.red+"18", border:`1.5px solid ${C.red}44`, color:C.red, borderRadius:9, padding:"8px 16px", cursor:"pointer", fontFamily:font, fontSize:12, fontWeight:700 }}>
+        <button onClick={onClear} style={{ background:C.red+"18", border:`1.5px solid ${C.red}44`, color:C.red, borderRadius:radius.md, padding:"8px 16px", cursor:"pointer", fontFamily:font, fontSize:12, fontWeight:700 }}>
           🗑️ Clear All
         </button>
       </div>
@@ -610,17 +639,19 @@ function HistoryTab({ history, onClear, onRemove }) {
               </div>
               <div style={{ display:"flex", gap:6 }}>
                 <CopyBtn text={item.prompt} />
-                <button onClick={() => setOpen(open===item.id?null:item.id)} style={{ background:"transparent", border:`1.5px solid ${C.border}`, color:C.muted, borderRadius:8, padding:"6px 12px", cursor:"pointer", fontFamily:font, fontSize:12 }}>
+                <button onClick={() => setOpen(open===item.id?null:item.id)} style={{ background:"transparent", border:`1.5px solid ${C.border}`, color:C.muted, borderRadius:radius.md, padding:"6px 12px", cursor:"pointer", fontFamily:font, fontSize:12 }}>
                   {open===item.id?"▲":"▼"}
                 </button>
-                <button onClick={() => onRemove(item.id)} style={{ background:"transparent", border:`1.5px solid ${C.red}44`, color:C.red, borderRadius:8, padding:"6px 10px", cursor:"pointer", fontSize:13 }}>✕</button>
+                <button onClick={() => onRemove(item.id)} style={{ background:"transparent", border:`1.5px solid ${C.red}44`, color:C.red, borderRadius:radius.md, padding:"6px 10px", cursor:"pointer", fontSize:13 }}>
+                  ✕
+                </button>
               </div>
             </div>
-            <div style={{ color:C.dim, fontSize:12, fontFamily:mono, background:C.surface, borderRadius:8, padding:"8px 12px" }}>
+            <div style={{ color:C.dim, fontSize:12, fontFamily:mono, background:C.surface, borderRadius:radius.md, padding:"8px 12px" }}>
               {item.preview || item.prompt?.slice(0,120)+"..."}
             </div>
             {open===item.id && (
-              <div style={{ marginTop:12, background:C.surface, borderRadius:10, padding:14, border:`1px solid ${C.gold}33`, maxHeight:300, overflowY:"auto" }}>
+              <div style={{ marginTop:12, background:C.surface, borderRadius:radius.md, padding:14, border:`1px solid ${C.gold}33`, maxHeight:300, overflowY:"auto" }}>
                 <pre style={{ color:C.text, fontSize:11, lineHeight:1.8, whiteSpace:"pre-wrap", wordBreak:"break-word", margin:0, fontFamily:mono }}>{item.prompt}</pre>
               </div>
             )}
@@ -649,27 +680,27 @@ function LearnTab() {
           <button key={tip.id} onClick={() => setActive(active===tip.id?null:tip.id)} style={{
             background: active===tip.id ? tip.color+"15" : C.card,
             border: `2px solid ${active===tip.id ? tip.color : C.border}`,
-            borderRadius:14, padding:18, cursor:"pointer", textAlign:"left",
-            boxShadow: active===tip.id ? `0 0 24px ${tip.color}22` : "none",
+            borderRadius:radius.lg, padding:18, cursor:"pointer", textAlign:"left",
+            boxShadow: active===tip.id ? `0 0 24px ${tip.color}22` : shadow.low,
             transition:"all .2s",
           }}>
             <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:8 }}>
               <div style={{ display:"flex", alignItems:"center", gap:10 }}>
-                <span style={{ background:tip.color+"22", color:tip.color, borderRadius:8, width:34, height:34, display:"flex", alignItems:"center", justifyContent:"center", fontSize:18, flexShrink:0 }}>{tip.icon}</span>
+                <span style={{ background:tip.color+"22", color:tip.color, borderRadius:radius.md, width:34, height:34, display:"flex", alignItems:"center", justifyContent:"center", fontSize:18, flexShrink:0 }}>{tip.icon}</span>
                 <span style={{ color: active===tip.id?tip.color:C.text, fontWeight:800, fontSize:14 }}>{tip.title}</span>
               </div>
-              <span style={{ background:tip.color+"22", color:tip.color, borderRadius:6, padding:"2px 9px", fontSize:11, fontWeight:800, whiteSpace:"nowrap" }}>{tip.impact}</span>
+              <span style={{ background:tip.color+"22", color:tip.color, borderRadius:radius.sm, padding:"2px 9px", fontSize:11, fontWeight:800, whiteSpace:"nowrap" }}>{tip.impact}</span>
             </div>
 
             {active===tip.id && (
               <div style={{ marginTop:10 }}>
                 <div style={{ color:C.muted, fontSize:13, lineHeight:1.7, marginBottom:14 }}>{tip.why}</div>
                 <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:10 }}>
-                  <div style={{ background:C.red+"12", border:`1px solid ${C.red}30`, borderRadius:9, padding:12 }}>
+                  <div style={{ background:C.red+"12", border:`1px solid ${C.red}30`, borderRadius:radius.md, padding:12 }}>
                     <div style={{ color:C.red, fontSize:11, fontWeight:800, marginBottom:6 }}>❌ WITHOUT THIS</div>
                     <div style={{ color:C.muted, fontSize:12, fontStyle:"italic" }}>{tip.bad}</div>
                   </div>
-                  <div style={{ background:C.green+"12", border:`1px solid ${C.green}30`, borderRadius:9, padding:12 }}>
+                  <div style={{ background:C.green+"12", border:`1px solid ${C.green}30`, borderRadius:radius.md, padding:12 }}>
                     <div style={{ color:C.green, fontSize:11, fontWeight:800, marginBottom:6 }}>✅ WITH THIS</div>
                     <div style={{ color:C.text, fontSize:12, fontStyle:"italic" }}>{tip.good}</div>
                   </div>
@@ -694,7 +725,7 @@ function LearnTab() {
             {n:"7", label:"EXAMPLE",   text:"[Sample of exactly what you want — style, tone, length, format]",              color:C.orange },
             {n:"8", label:"CHECKLIST", text:"[3 questions the AI must verify ☐ before responding]",                        color:C.gold },
           ].map((r,i) => (
-            <div key={i} style={{ display:"grid", gridTemplateColumns:"28px 90px 1fr", gap:10, alignItems:"center", padding:"8px 10px", background:C.surface, borderRadius:8 }}>
+            <div key={i} style={{ display:"grid", gridTemplateColumns:"28px 90px 1fr", gap:10, alignItems:"center", padding:"8px 10px", background:C.surface, borderRadius:radius.md, border:`1px solid ${C.border}` }}>
               <span style={{ color:r.color, fontWeight:900, fontSize:13 }}>{r.n}.</span>
               <span style={{ color:r.color, fontWeight:800, fontSize:12 }}>{r.label}</span>
               <span style={{ color:C.muted, fontSize:12, fontFamily:mono }}>{r.text}</span>
@@ -732,28 +763,10 @@ function QuickTab({ onSave }) {
              : lower.includes("example")||lower.includes("like this")||lower.includes("similar to") ? "C-A-R-E"
              : "R-C-A-T";
 
-    const toolNote = tool && tool.id!=="any" ? `\n[Optimised for ${tool.name} — ${tool.hint}]` : "";
+    const toolNote = tool && tool.id!="any" ? `\n[Optimised for ${tool.name} — ${tool.hint}]` : "";
     const catNote  = cat ? `\nCATEGORY: ${cat.label}` : "";
 
-    const prompt = `You are a world-class expert in ${cat?.label||"this field"} with deep practical experience.
-${catNote}
-
-TASK:
-${idea.trim()}
-
-APPROACH:
-- Think step-by-step before responding
-- Be specific and actionable — not generic
-- Use concrete examples where helpful
-- Structure your response clearly
-
-QUALITY CHECK:
-☐ Does the output directly address the task?
-☐ Is it specific enough to be immediately useful?
-☐ Does it match the expected format?
-${toolNote}
-
-[Framework auto-selected: ${fw}]`;
+    const prompt = `You are a world-class expert in ${cat?.label||"this field"} with deep practical experience.\n${catNote}\n\nTASK:\n${idea.trim()}\n\nAPPROACH:\n- Think step-by-step before responding\n- Be specific and actionable — not generic\n- Use concrete examples where helpful\n- Structure your response clearly\n\nQUALITY CHECK:\n☐ Does the output directly address the task?\n☐ Is it specific enough to be immediately useful?\n☐ Does it match the expected format?\n${toolNote}\n\n[Framework auto-selected: ${fw}]`;
 
     setTimeout(() => { setResult(prompt); setLoading(false); }, 350);
   }
@@ -772,10 +785,10 @@ ${toolNote}
         <Label color={C.blue}>What do you want the AI to do?</Label>
         <textarea
           rows={4}
-          placeholder="Describe your task in plain language...&#10;&#10;e.g. 'Design a homepage for a charity that helps disabled people earn online'&#10;e.g. 'Fix my React bug where the button crashes the app'&#10;e.g. 'Write a blog post about AI prompt engineering for beginners'"
+          placeholder="Describe your task in plain language...\n\ne.g. 'Design a homepage for a charity that helps disabled people earn online'\ne.g. 'Fix my React bug where the button crashes the app'\ne.g. 'Write a blog post about AI prompt engineering for beginners'"
           value={idea}
           onChange={e=>setIdea(e.target.value)}
-          style={{ width:"100%", background:C.surface, border:`1.5px solid ${C.border}`, borderRadius:10, padding:"12px 16px", color:C.text, fontSize:14, fontFamily:font, outline:"none", resize:"vertical", lineHeight:1.7, boxSizing:"border-box" }}
+          style={{ width:"100%", background:C.surface, border:`1.5px solid ${C.border}`, borderRadius:radius.md, padding:"12px 16px", color:C.text, fontSize:14, fontFamily:font, outline:"none", resize:"vertical", lineHeight:1.7, boxSizing:"border-box" }}
         />
       </Card>
 
@@ -803,7 +816,7 @@ ${toolNote}
           <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:10 }}>
             <div style={{ color:C.green, fontWeight:800, fontSize:14 }}>✅ Your optimised prompt is ready</div>
             <div style={{ display:"flex", gap:8 }}>
-              <button onClick={() => copy(result)} style={{ background:copied?C.green+"22":C.gold+"22", border:`1.5px solid ${copied?C.green:C.gold}`, color:copied?C.green:C.gold, borderRadius:9, padding:"8px 18px", cursor:"pointer", fontFamily:font, fontSize:13, fontWeight:700 }}>
+              <button onClick={() => copy(result)} style={{ background:copied?C.green+"22":C.gold+"22", border:`1.5px solid ${copied?C.green:C.gold}`, color:copied?C.green:C.gold, borderRadius:radius.md, padding:"8px 18px", cursor:"pointer", fontFamily:font, fontSize:13, fontWeight:700 }}>
                 {copied?"✅ Copied!":"📋 Copy Prompt"}
               </button>
               <GBtn sm color={C.green} onClick={() => onSave({ prompt:result, framework:"Quick", tool:AI_TOOLS.find(t=>t.id===toolId)?.name, score:70, preview:result.slice(0,100)+"..." })}>
@@ -811,10 +824,10 @@ ${toolNote}
               </GBtn>
             </div>
           </div>
-          <div style={{ background:C.surface, border:`1.5px solid ${C.gold}44`, borderRadius:12, padding:18, maxHeight:400, overflowY:"auto" }}>
-            <pre style={{ color:C.text, fontSize:12, lineHeight:1.85, whiteSpace:"pre-wrap", wordBreak:"break-word", margin:0, fontFamily:mono }}>{result}</pre>
+          <div style={{ background:C.surface, border:`1.5px solid ${C.gold}44`, borderRadius:radius.lg, padding:18, maxHeight:400, overflowY:"auto" }}>
+            <pre style={{ color:C.text, fontSize:12, lineHeight:1.85, whiteSpace:"pre-wrap", wordBreak: "break-word", margin:0, fontFamily:mono }}>{result}</pre>
           </div>
-          <div style={{ marginTop:12, padding:"10px 14px", background:C.blue+"12", border:`1px solid ${C.blue}30`, borderRadius:8, fontSize:12, color:C.blue }}>
+          <div style={{ marginTop:12, padding:"10px 14px", background:C.blue+"12", border:`1px solid ${C.blue}30`, borderRadius:radius.md, fontSize:12, color:C.blue }}>
             💡 Want a more powerful version? Use the <strong>Builder tab</strong> to fill in a full framework — it produces 3× better prompts.
           </div>
         </div>
@@ -854,13 +867,13 @@ export default function App() {
   const removeEntry  = (id) => setHistory(history.filter(h=>h.id!==id));
 
   return (
-    <div style={{ background:C.bg, minHeight:"100vh", fontFamily:font, color:C.text }}>
+    <div style={{ background:"linear-gradient(180deg, #F7F9FC 0%, #FFFFFF 40%)", minHeight:"100vh", fontFamily:font, color:C.text }}>
 
       {/* ── HEADER ── */}
-      <header style={{ borderBottom:`1px solid ${C.border}`, padding:"12px 32px", background:"rgba(255,255,255,0.9)", position:"sticky", top:0, zIndex:100, backdropFilter:"blur(16px)" }}>
+      <header style={{ borderBottom:`1px solid ${C.border}`, padding:"12px 32px", background:"rgba(255,255,255,0.92)", position:"sticky", top:0, zIndex:100, backdropFilter:"blur(16px)", boxShadow:shadow.low }}>
         <div style={{ maxWidth:1200, margin:"0 auto", display:"flex", alignItems:"center", justifyContent:"space-between" }}>
           <div style={{ display:"flex", alignItems:"center", gap:12 }}>
-            <div style={{ background:C.blue, borderRadius:999, width:36, height:36, display:"flex", alignItems:"center", justifyContent:"center", fontSize:18, color:"#FFFFFF", boxShadow:"0 1px 3px rgba(15,23,42,0.25)" }}>⚡</div>
+            <div style={{ background:C.blue, borderRadius:radius.pill, width:36, height:36, display:"flex", alignItems:"center", justifyContent:"center", fontSize:18, color:"#FFFFFF", boxShadow:shadow.med }}>⚡</div>
             <div>
               <div style={{ fontWeight:600, fontSize:18, color:C.text, letterSpacing:"-.01em" }}>PromptCraft</div>
               <div style={{ color:C.muted, fontSize:12 }}>Universal AI prompt toolkit</div>
@@ -873,19 +886,20 @@ export default function App() {
                 key={t.id}
                 onClick={() => setTab(t.id)}
                 style={{
-                  background: tab===t.id ? "#E0EBFF" : "transparent",
+                  background: tab===t.id ? "#E8F0FE" : "transparent",
                   border: "1px solid transparent",
                   color: tab===t.id ? C.blue : C.muted,
-                  borderRadius:999,
-                  padding:"6px 14px",
+                  borderRadius: radius.pill,
+                  padding:"8px 14px",
                   cursor:"pointer",
                   fontFamily:font,
                   fontSize:13,
-                  fontWeight:tab===t.id ? 600 : 500,
+                  fontWeight:tab===t.id ? 700 : 600,
                   transition:"background-color .15s ease, color .15s ease",
                   display:"flex",
                   alignItems:"center",
                   gap:6,
+                  boxShadow: tab===t.id ? shadow.low : "none"
                 }}
               >
                 <span>{t.icon}</span>
@@ -896,7 +910,7 @@ export default function App() {
 
           <div style={{ display:"flex", alignItems:"center", gap:10 }}>
             {history.length > 0 && (
-              <div style={{ background:"#ECFDF3", border:`1px solid ${C.green}33`, color:C.green, borderRadius:999, padding:"4px 12px", fontSize:12, fontWeight:500 }}>
+              <div style={{ background:"#ECFDF3", border:`1px solid ${C.green}33`, color:C.green, borderRadius:radius.pill, padding:"4px 12px", fontSize:12, fontWeight:500 }}>
                 {history.length} saved
               </div>
             )}
@@ -904,7 +918,7 @@ export default function App() {
               href="https://github.com/your-username/promptcraft-ui"
               target="_blank"
               rel="noreferrer"
-              style={{ background:"#F3F4F6", border:`1px solid ${C.border}`, color:C.muted, borderRadius:999, padding:"6px 12px", textDecoration:"none", fontSize:12, fontWeight:500, display:"flex", alignItems:"center", gap:6 }}
+              style={{ background:"#F3F4F6", border:`1px solid ${C.border}`, color:C.muted, borderRadius:radius.pill, padding:"6px 12px", textDecoration:"none", fontSize:12, fontWeight:500, display:"flex", alignItems:"center", gap:6 }}
             >
               ⭐ Star on GitHub
             </a>
@@ -914,15 +928,15 @@ export default function App() {
 
       {/* ── HERO BANNER (only on quick tab) ── */}
       {tab === "quick" && (
-        <div style={{ background:"#EEF2FF", borderBottom:`1px solid ${C.border}`, padding:"24px 32px 20px" }}>
-          <div style={{ maxWidth:1200, margin:"0 auto", display:"grid", gridTemplateColumns:"1fr 1fr 1fr 1fr", gap:16 }}>
+        <div style={{ background:"#EEF3FD", borderBottom:`1px solid ${C.border}`, padding:"24px 32px 20px" }}>
+          <div style={{ maxWidth:1200, margin:"0 auto", display:"grid", gridTemplateColumns:"repeat(4, 1fr)", gap:16 }}>
             {[
               { icon:"🎯", stat:"5 frameworks", sub:"Battle-tested patterns for any task", color:C.blue },
               { icon:"📚", stat:"8+ libraries", sub:"Design, code, marketing, business & more", color:C.purple },
               { icon:"🤖", stat:"10 AI tools", sub:"Works with ChatGPT, Claude, Gemini and more", color:C.green },
               { icon:"🎓", stat:"8 quick laws", sub:"Learn prompt craft in minutes, not hours", color:C.gold },
             ].map((s,i) => (
-              <div key={i} style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:12, padding:"14px 16px" }}>
+              <div key={i} style={{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:radius.lg, padding:"14px 16px", boxShadow:shadow.low }}>
                 <div style={{ fontSize:24, marginBottom:6 }}>{s.icon}</div>
                 <div style={{ color:s.color, fontWeight:600, fontSize:15 }}>{s.stat}</div>
                 <div style={{ color:C.dim, fontSize:11, marginTop:3 }}>{s.sub}</div>
@@ -937,7 +951,7 @@ export default function App() {
         {tab==="quick"   && <QuickTab onSave={handleSave} />}
         {tab==="builder" && <BuilderTab onSave={handleSave} />}
         {tab==="library" && <LibraryTab />}
-        {tab==="history" && <HistoryTab history={history} onClear={clearHistory} onRemove={removeEntry} />}
+        {tab==="history" && <HistoryTab history={history} onClear={clearHistory} onRemove={removeEntry} />} 
         {tab==="learn"   && <LearnTab />}
       </main>
 
@@ -946,7 +960,7 @@ export default function App() {
         <div style={{
           position:"fixed", bottom:28, right:28, zIndex:999,
           background: toast.color+"22", border:`2px solid ${toast.color}`,
-          color:toast.color, borderRadius:12, padding:"12px 20px",
+          color:toast.color, borderRadius:radius.lg, padding:"12px 20px",
           fontSize:14, fontWeight:800, fontFamily:font,
           boxShadow:`0 8px 32px ${toast.color}33`,
           animation:"slideUp .3s ease",
