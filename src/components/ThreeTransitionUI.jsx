@@ -127,9 +127,10 @@ function Scene({ stage, isFrozen }) {
 
 // --- MAIN TRANSITION COMPONENT ---
 
-export default function ThreeTransitionUI({ onComplete }) {
+export default function ThreeTransitionUI({ onComplete, onCraftSubmit }) {
   const [stage, setStage] = useState(1); // 1: LOST, 2: CRAFT, 3: LOGIN
   const [isFrozen, setIsFrozen] = useState(false);
+  const [isAnalyzing, setIsAnalyzing] = useState(false); // New state for backend connection
   const [loginAttempts, setLoginAttempts] = useState(0);
   const [rawInput, setRawInput] = useState('');
 
@@ -163,7 +164,14 @@ export default function ThreeTransitionUI({ onComplete }) {
 
   const handleCraftSubmit = (e) => {
     if (e.key === 'Enter' && sanitizedInput.length > 0) {
-      setStage(3);
+      // 1. Trigger Neural Analyzing state
+      setIsAnalyzing(true);
+
+      // 2. Wait ~1s for the 3D animation before moving to stage 3
+      setTimeout(() => {
+        setIsAnalyzing(false);
+        setStage(3);
+      }, 1000);
     }
   };
 
@@ -176,6 +184,10 @@ export default function ThreeTransitionUI({ onComplete }) {
     const email = e.target.email.value;
 
     if (password.length >= 6 && email.includes('@')) {
+      // Submit the intent we saved from the Craft stage, then transition
+      if (onCraftSubmit) {
+        onCraftSubmit(sanitizedInput);
+      }
       onComplete();
     } else {
       const newAttempts = loginAttempts + 1;
@@ -264,7 +276,7 @@ export default function ThreeTransitionUI({ onComplete }) {
               style={{ width: '100%', maxWidth: '600px', padding: '0 20px' }}
             >
               <h2 style={{ fontSize: '2.5rem', marginBottom: '2rem', textAlign: 'center', color: '#F5A623' }}>
-                Let's Craft.
+                {isAnalyzing ? "Neural Analyzing..." : "Let's Craft."}
               </h2>
               <div style={{ position: 'relative' }}>
                 <input
@@ -273,6 +285,7 @@ export default function ThreeTransitionUI({ onComplete }) {
                   value={rawInput}
                   onChange={(e) => setRawInput(e.target.value)}
                   onKeyDown={handleCraftSubmit}
+                  disabled={isAnalyzing}
                   style={{
                     width: '100%',
                     padding: '1.2rem 1.5rem',
@@ -281,7 +294,7 @@ export default function ThreeTransitionUI({ onComplete }) {
                     background: 'rgba(255,255,255,0.05)',
                     border: '1px solid rgba(245, 166, 35, 0.3)',
                     borderRadius: '12px',
-                    color: '#FFF',
+                    color: isAnalyzing ? '#9CA3AF' : '#FFF',
                     outline: 'none',
                     // Glow scales with input length (max 30px)
                     boxShadow: `0 0 ${Math.min(rawInput.length * 2, 30)}px rgba(245, 166, 35, 0.4)`,
