@@ -167,13 +167,15 @@ export default function ThreeTransitionUI({ onComplete }) {
     }
   };
 
-  const handleLogin = (e) => {
+  const handleSignup = (e) => {
     e.preventDefault();
     if (isFrozen) return;
 
-    // Always succeed after typing 'admin' for demo, otherwise fail
+    // Simple validation for demo: any password >= 6 chars connects to the app
     const password = e.target.password.value;
-    if (password === 'admin') {
+    const email = e.target.email.value;
+
+    if (password.length >= 6 && email.includes('@')) {
       onComplete();
     } else {
       const newAttempts = loginAttempts + 1;
@@ -314,7 +316,7 @@ export default function ThreeTransitionUI({ onComplete }) {
               }}
             >
               <h2 style={{ fontSize: '2rem', marginBottom: '1.5rem', textAlign: 'center', color: '#FFF' }}>
-                Unlock PromptCraft
+                Join PromptCraft
               </h2>
 
               {isFrozen && (
@@ -323,11 +325,30 @@ export default function ThreeTransitionUI({ onComplete }) {
                 </div>
               )}
 
-              <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+              <form onSubmit={handleSignup} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                <input
+                  name="email"
+                  type="email"
+                  placeholder="Enter Email"
+                  disabled={isFrozen}
+                  style={{
+                    width: '100%',
+                    padding: '1rem',
+                    fontSize: '1rem',
+                    fontFamily: fontMono,
+                    background: 'rgba(0,0,0,0.2)',
+                    border: '1px solid rgba(255,255,255,0.1)',
+                    borderRadius: '8px',
+                    color: '#FFF',
+                    outline: 'none',
+                    boxSizing: 'border-box',
+                    borderColor: isFrozen ? '#DC2626' : 'rgba(255,255,255,0.1)'
+                  }}
+                />
                 <input
                   name="password"
                   type="password"
-                  placeholder="Enter Password (admin)"
+                  placeholder="Create Password (min 6 chars)"
                   disabled={isFrozen}
                   style={{
                     width: '100%',
@@ -360,7 +381,7 @@ export default function ThreeTransitionUI({ onComplete }) {
                     opacity: isFrozen ? 0.5 : 1
                   }}
                 >
-                  {isFrozen ? 'LOCKED' : 'ENTER'}
+                  {isFrozen ? 'LOCKED' : 'CONNECT'}
                 </button>
               </form>
             </motion.div>
