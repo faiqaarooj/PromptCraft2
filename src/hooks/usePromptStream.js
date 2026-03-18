@@ -4,11 +4,13 @@ import { useState, useCallback } from 'react';
 export const usePromptStream = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [result, setResult] = useState("");
+    const [statusHook, setStatusHook] = useState(""); // For neural micro-interactions
     const [error, setError] = useState(null);
 
     const startStream = useCallback(async (input, domain, onTransitionComplete) => {
         setIsLoading(true);
         setResult("");
+        setStatusHook("");
         setError(null);
 
         // Notify the transition UI that streaming has effectively begun
@@ -57,7 +59,15 @@ export const usePromptStream = () => {
                         }
                         try {
                             const data = JSON.parse(dataStr);
-                            setResult(prev => prev + data.token);
+                            if (data.type === "status") {
+                                setStatusHook(data.content);
+                            } else if (data.type === "token") {
+                                setResult(prev => prev + data.token);
+                            } else if (data.type === "error") {
+                                setError(data.content);
+                            } else if (data.token) { // Fallback for old format
+                                setResult(prev => prev + data.token);
+                            }
                         } catch (e) {
                             console.error("Failed to parse SSE chunk", e, dataStr);
                         }
@@ -72,5 +82,5 @@ export const usePromptStream = () => {
         }
     }, []);
 
-    return { startStream, isLoading, result, error };
+    return { startStream, isLoading, result, error, statusHook };
 };
