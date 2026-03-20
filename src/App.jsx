@@ -3,6 +3,7 @@ import {
   AI_TOOLS, CATEGORIES, TONES, FRAMEWORKS,
   PROMPT_LIBRARY, PROMPT_TIPS, HISTORY_KEY, FAVORITES_KEY
 } from "./data";
+import { ThreeNarrativeUI } from "./components/ThreeNarrativeUI";
 
 
 // ─────────────────────────────────────────────────────────────
@@ -848,6 +849,7 @@ const TABS = [
 ];
 
 export default function App() {
+  const [showNarrative, setShowNarrative] = useState(true);
   const [tab, setTab]         = useState("quick");
   const [history, setHistory] = useLocalStorage(HISTORY_KEY, []);
   const [toast, setToast]     = useState(null);
@@ -856,15 +858,28 @@ export default function App() {
     setToast({ msg, color });
     setTimeout(() => setToast(null), 2500);
   };
-
   const handleSave = useCallback((entry) => {
     const updated = [{ ...entry, id:Date.now(), savedAt:new Date().toISOString() }, ...history].slice(0,50);
     setHistory(updated);
     showToast("✅ Prompt saved to History!");
   }, [history, setHistory]);
-
   const clearHistory = () => { setHistory([]); showToast("History cleared", C.red); };
   const removeEntry  = (id) => setHistory(history.filter(h=>h.id!==id));
+
+
+  if (showNarrative) {
+    return (
+      <div style={{ position: "fixed", inset: 0, zIndex: 9999 }}>
+        <ThreeNarrativeUI onLoginSuccess={() => setShowNarrative(false)} />
+        <button
+          onClick={() => setShowNarrative(false)}
+          style={{ position: "absolute", top: 20, right: 20, zIndex: 10000, background: "rgba(255,255,255,0.1)", color: "#fff", border: "1px solid rgba(255,255,255,0.2)", padding: "8px 16px", borderRadius: 8, cursor: "pointer" }}
+        >
+          Skip Experience
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div style={{ background:"linear-gradient(180deg, #F7F9FC 0%, #FFFFFF 40%)", minHeight:"100vh", fontFamily:font, color:C.text }}>
@@ -948,6 +963,7 @@ export default function App() {
 
       {/* ── CONTENT ── */}
       <main style={{ maxWidth:1200, margin:"0 auto", padding:"32px 32px 80px" }}>
+
         {tab==="quick"   && <QuickTab onSave={handleSave} />}
         {tab==="builder" && <BuilderTab onSave={handleSave} />}
         {tab==="library" && <LibraryTab />}
