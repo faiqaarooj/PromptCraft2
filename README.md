@@ -48,9 +48,9 @@ npm start                   # runs on http://localhost:5000
 | GET | `/api/history` | ✅ Bearer | List saved prompts |
 | POST | `/api/history` | ✅ Bearer | Save a prompt |
 | DELETE | `/api/history/:id` | ✅ Bearer | Delete a saved prompt |
-| GET | `/api/favorites` | ✅ Bearer | List favourites |
-| POST | `/api/favorites` | ✅ Bearer | Add a favourite |
-| DELETE | `/api/favorites/:id` | ✅ Bearer | Remove a favourite |
+| GET | `/api/favorites` | ✅ Bearer | List favorites |
+| POST | `/api/favorites` | ✅ Bearer | Add a favorite |
+| DELETE | `/api/favorites/:id` | ✅ Bearer | Remove a favorite |
 | GET | `/api/prompts` | — | Browse community prompts |
 | GET | `/api/prompts/:id` | — | Get one community prompt |
 | POST | `/api/prompts` | ✅ Bearer | Share a prompt publicly |

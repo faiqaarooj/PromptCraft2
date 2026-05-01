@@ -4,11 +4,11 @@ const requireAuth = require("../middleware/auth");
 
 const router = express.Router();
 
-// All favourites routes require authentication
+// All favorites routes require authentication
 router.use(requireAuth);
 
 // ── GET /api/favorites ───────────────────────────────────────
-// Returns all favourites for the authenticated user (newest first)
+// Returns all favorites for the authenticated user (newest first)
 router.get("/", (req, res) => {
   const rows = db
     .prepare(
@@ -52,11 +52,11 @@ router.delete("/:id", (req, res) => {
     .get(id, req.userId);
 
   if (!row) {
-    return res.status(404).json({ error: "Favourite not found" });
+    return res.status(404).json({ error: "Favorite not found" });
   }
 
   db.prepare("DELETE FROM favorites WHERE id = ?").run(id);
-  return res.json({ message: "Removed from favourites" });
+  return res.json({ message: "Removed from favorites" });
 });
 
 module.exports = router;
