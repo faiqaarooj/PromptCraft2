@@ -14,7 +14,55 @@ Most people get disappointing results from AI tools — not because the AI is ba
 
 **PromptCraft solves this in 60 seconds.**
 
-newsletter
-my personal wrok hanldleing .
+---
+
+## 🗂️ Project Structure
+
+```
+PromptCraft2/
+├── src/          # React frontend (Create React App)
+└── backend/      # Node.js + Express REST API
+```
+
+---
+
+## 🚀 Backend — Quick Start
+
+The backend is a Node.js REST API that persists prompt history, favourites, and community-shared prompts to a local SQLite database.
+
+### Setup
+
+```bash
+cd backend
+cp .env.example .env        # fill in JWT_SECRET
+npm install
+npm start                   # runs on http://localhost:5000
+```
+
+### API Endpoints
+
+| Method | Route | Auth | Description |
+|--------|-------|------|-------------|
+| POST | `/api/auth/register` | — | Create account, returns JWT |
+| POST | `/api/auth/login` | — | Login, returns JWT |
+| GET | `/api/history` | ✅ Bearer | List saved prompts |
+| POST | `/api/history` | ✅ Bearer | Save a prompt |
+| DELETE | `/api/history/:id` | ✅ Bearer | Delete a saved prompt |
+| GET | `/api/favorites` | ✅ Bearer | List favourites |
+| POST | `/api/favorites` | ✅ Bearer | Add a favourite |
+| DELETE | `/api/favorites/:id` | ✅ Bearer | Remove a favourite |
+| GET | `/api/prompts` | — | Browse community prompts |
+| GET | `/api/prompts/:id` | — | Get one community prompt |
+| POST | `/api/prompts` | ✅ Bearer | Share a prompt publicly |
+| DELETE | `/api/prompts/:id` | ✅ Bearer | Delete your shared prompt |
+| GET | `/api/health` | — | Health check |
+
+### Auth
+
+Include the JWT from register/login as a Bearer token:
+
+```
+Authorization: Bearer <token>
+```
 
 ---
